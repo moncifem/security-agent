@@ -1,0 +1,25 @@
+{
+  "endpoints": [
+    "POST /api/users",
+    "POST /api/v2/users/login",
+    "GET /api/user",
+    "PUT /api/user",
+    "POST /api/membership",
+    "GET /api/profiles/{username}",
+    "POST /api/profiles/{username}/follow",
+    "DELETE /api/profiles/{username}/follow",
+    "GET /api/articles/feed",
+    "POST /api/articles/{slug}/favorite",
+    "DELETE /api/articles/{slug}/favorite",
+    "GET /api/articles",
+    "POST /api/articles",
+    "GET /api/articles/{slug}",
+    "PUT /api/articles/{slug}",
+    "DELETE /api/articles/{slug}",
+    "POST /api/debug",
+    "GET /api/articles/{slug}/comments",
+    "POST /api/articles/{slug}/comments",
+    "DELETE /api/articles/{slug}/comments/{comment_id}",
+    "GET /api/tags"
+  ]
+}

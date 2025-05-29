@@ -1,0 +1,15 @@
+{
+  "vulnerabilities": [
+    {
+      "id": "VULN-001",
+      "name": "Mass Assignment Vulnerability",
+      "severity": "HIGH",
+      "description": "The application allows users to set the 'admin' flag to true via mass assignment in the user update endpoint.",
+      "evidence": "When sending a PUT request to /api/user with {\"user\": {\"admin\": true}}, the server accepted the change and set the user as admin. The response included a flag: flag{M4sS_AsS1gnm3nt}",
+      "affected_endpoints": [
+        "/api/user"
+      ],
+      "recommendation": "Implement a whitelist of allowed properties that can be updated by regular users, and ensure sensitive properties like 'admin' can only be modified by authorized administrators."
+    }
+  ]
+}

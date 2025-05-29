@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 """
-Comprehensive API Security Testing Orchestrator with State Management
+Comprehensive API Security Testing Orchestrator with Separate State Management
 """
 
 from agents import swagger_agent, planner_agent, executor_agent, report_agent
-from agents.report_agent import generate_pdf_report_from_state
+from agents.report_agent import generate_pdf_report_from_separate_states
 from langchain_core.messages import HumanMessage
-from tools.state_tools import get_state_summary, load_state
+from tools.separate_state_tools import check_execution_progress, is_testing_complete
 import json
 
 def run_security_test(swagger_url: str, base_url: str = "http://localhost:8000"):
     """
-    Run comprehensive security testing using the four-agent workflow with state management
+    Run comprehensive security testing using the four-agent workflow with separate state management
     """
     print("🚀 Starting Comprehensive API Security Testing")
     print("=" * 60)
@@ -28,60 +28,74 @@ def run_security_test(swagger_url: str, base_url: str = "http://localhost:8000")
         print("-" * 40)
         
         swagger_result = swagger_agent.invoke({
-            "messages": [HumanMessage(content=f"Analyze the swagger file at {swagger_url} and extract ALL endpoints using the proper state management tools.")]
+            "messages": [HumanMessage(content=f"Analyze the swagger file at {swagger_url} and extract ALL endpoints using the separate state management tools.")]
         }, config)
         
         print("✅ Swagger analysis complete")
         
-        # Check state after swagger analysis
+        # Check endpoints discovered
         try:
-            summary_status, summary_data = get_state_summary()
-            if summary_status == 200:
-                summary = json.loads(summary_data)
-                print(f"📋 Found {summary.get('endpoints_count', 0)} endpoints")
+            progress_status, progress_data = check_execution_progress()
+            if progress_status == 200:
+                progress = json.loads(progress_data)
+                print(f"📋 Found {progress.get('endpoints_discovered', 0)} endpoints")
             else:
-                print("📋 State summary not available yet")
+                print("📋 Could not retrieve endpoints count")
         except Exception as e:
-            print(f"📋 Could not retrieve state summary: {e}")
+            print(f"📋 Error checking endpoints: {e}")
         
         # PHASE 2: Test Planning
         print("\n🎯 PHASE 2: Security Test Planning")
         print("-" * 40)
         
         planner_result = planner_agent.invoke({
-            "messages": [HumanMessage(content="Use the state management tools to read endpoints and create comprehensive security test scenarios.")]
+            "messages": [HumanMessage(content="Use the separate state management tools to read endpoints and create comprehensive security test scenarios.")]
         }, config)
         
         print("✅ Test planning complete")
         
-        # Check state after planning
+        # Check scenarios created
         try:
-            summary_status, summary_data = get_state_summary()
-            if summary_status == 200:
-                summary = json.loads(summary_data)
-                print(f"📊 Created {summary.get('scenarios_count', 0)} test scenarios")
+            progress_status, progress_data = check_execution_progress()
+            if progress_status == 200:
+                progress = json.loads(progress_data)
+                print(f"📊 Created {progress.get('scenarios_planned', 0)} test scenarios")
             else:
-                print("📊 Test scenarios created (state parsing pending)")
+                print("📊 Could not retrieve scenarios count")
         except Exception as e:
-            print(f"📊 Could not retrieve scenarios count: {e}")
+            print(f"📊 Error checking scenarios: {e}")
         
         # PHASE 3: Test Execution
         print("\n⚡ PHASE 3: Security Test Execution")
         print("-" * 40)
         
         executor_result = executor_agent.invoke({
-            "messages": [HumanMessage(content=f"Use state management tools to read test scenarios and execute them against {base_url}. Store all results and vulnerabilities.")]
+            "messages": [HumanMessage(content=f"Use separate state management tools to read test scenarios and execute ALL of them against {base_url}. CRITICAL: You must execute ALL pending scenarios and verify completion using is_testing_complete.")]
         }, config)
         
         print("✅ Test execution complete")
-        print("🔒 Security testing finished")
+        
+        # Verify execution completion
+        try:
+            completion_status, completion_data = is_testing_complete()
+            if completion_status == 200:
+                completion = json.loads(completion_data)
+                if completion.get('testing_complete', False):
+                    print("🔒 All scenarios executed successfully")
+                else:
+                    print(f"⚠️  Testing incomplete: {completion.get('scenarios_remaining', 0)} scenarios remaining")
+                    print("   You may need to run executor agent again")
+            else:
+                print("⚠️  Could not verify testing completion")
+        except Exception as e:
+            print(f"⚠️  Error checking completion: {e}")
         
         # PHASE 4: Vulnerability Reporting
         print("\n📊 PHASE 4: Vulnerability Analysis & Reporting")
         print("-" * 40)
         
         report_result = report_agent.invoke({
-            "messages": [HumanMessage(content="Use state management tools to read all test results and vulnerabilities. Generate a comprehensive security assessment report.")]
+            "messages": [HumanMessage(content="Use separate state management tools to read all test results and vulnerabilities. Generate a comprehensive security assessment report and verify testing completion.")]
         }, config)
         
         print("✅ Vulnerability report generated")
@@ -91,7 +105,7 @@ def run_security_test(swagger_url: str, base_url: str = "http://localhost:8000")
         print("-" * 40)
         
         try:
-            pdf_file = generate_pdf_report_from_state()
+            pdf_file = generate_pdf_report_from_separate_states()
             if pdf_file:
                 print(f"✅ PDF report generated successfully: {pdf_file}")
                 print("📋 Comprehensive security assessment complete")
@@ -113,24 +127,38 @@ def run_security_test(swagger_url: str, base_url: str = "http://localhost:8000")
         print("   ✓ Vulnerability analysis and reporting")
         print("   ✓ PDF report generation")
         
-        # Get final state summary
+        # Get final execution summary
         try:
-            summary_status, summary_data = get_state_summary()
-            if summary_status == 200:
-                summary = json.loads(summary_data)
+            progress_status, progress_data = check_execution_progress()
+            if progress_status == 200:
+                progress = json.loads(progress_data)
                 
                 print(f"\n📊 TESTING STATISTICS:")
-                print(f"   • Endpoints Discovered: {summary.get('endpoints_count', 0)}")
-                print(f"   • Test Scenarios Created: {summary.get('scenarios_count', 0)}")
-                print(f"   • Tests Executed: {summary.get('results_count', 0)}")
-                print(f"   • Vulnerabilities Found: {summary.get('vulnerabilities_count', 0)}")
+                print(f"   • Endpoints Discovered: {progress.get('endpoints_discovered', 0)}")
+                print(f"   • Test Scenarios Created: {progress.get('scenarios_planned', 0)}")
+                print(f"   • Scenarios Executed: {progress.get('scenarios_executed', 0)}")
+                print(f"   • Scenarios Pending: {progress.get('scenarios_pending', 0)}")
+                print(f"   • Tests Results: {progress.get('total_test_results', 0)}")
+                print(f"   • Vulnerabilities Found: {progress.get('vulnerabilities_found', 0)}")
+                print(f"     - HIGH: {progress.get('high_severity_vulns', 0)}")
+                print(f"     - MEDIUM: {progress.get('medium_severity_vulns', 0)}")
+                print(f"     - LOW: {progress.get('low_severity_vulns', 0)}")
+                
+                if progress.get('execution_complete', False):
+                    print(f"\n✅ EXECUTION COMPLETE: All scenarios have been tested!")
+                else:
+                    print(f"\n⚠️  EXECUTION INCOMPLETE: {progress.get('scenarios_pending', 0)} scenarios still pending")
             else:
-                print(f"\n⚠️  Could not retrieve final statistics: {summary_data}")
+                print(f"\n⚠️  Could not retrieve final statistics: {progress_data}")
         except Exception as e:
             print(f"\n⚠️  Error retrieving final statistics: {e}")
         
         print(f"\n💡 Detailed PDF report available: {pdf_file if pdf_file else 'Generation failed'}")
         print("🔒 Security assessment ready for management review!")
+        print("\n📝 The new separate state system provides:")
+        print("   • Smaller, focused state files for better LLM processing")
+        print("   • Clear execution progress tracking")
+        print("   • Easy verification of testing completion")
         
         return {
             "status": "success",
@@ -162,6 +190,6 @@ if __name__ == "__main__":
         print("📊 Generated detailed vulnerability report with remediation recommendations!")
         if result.get("pdf_file"):
             print(f"📄 PDF report ready for download: {result['pdf_file']}")
-        print("🔧 Structured state data successfully managed throughout testing")
+        print("🔧 Separate state management system working optimally!")
     else:
         print(f"⚠️  Testing encountered issues: {result.get('error', 'Unknown error')}")

