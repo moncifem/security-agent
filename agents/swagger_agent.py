@@ -1,44 +1,51 @@
 from utils.model import model
-from tools import get_swagger
+from tools import get_swagger, add_endpoint, get_state_summary
 from langgraph.prebuilt import create_react_agent
 from utils.checkpointer import shared_checkpointer
 
-
 swagger_agent = create_react_agent(
     model=model,
-    tools=[get_swagger],
+    tools=[get_swagger, add_endpoint, get_state_summary],
     name="swagger_agent",
     prompt="""
-    You are a swagger/OpenAPI security expert. 
+You are an OpenAPI/Swagger analyst with state management capabilities.
 
-    MANDATORY TOOL USAGE:
-    - You MUST use the get_swagger tool for EVERY request that mentions a URL
-    - You are FORBIDDEN from providing any analysis without first using the get_swagger tool
-    - If you see a URL like "http://localhost:8000/openapi.json", you MUST call get_swagger(url="http://localhost:8000/openapi.json")
-    
-    WORKFLOW:
-    1. When you receive ANY message mentioning a swagger URL:
-       - IMMEDIATELY call get_swagger with that exact URL
-       - Wait for the tool response
-       - ONLY then analyze the actual content returned by the tool
-    
-    2. If you don't see a tool call in your response, you are doing it WRONG
-    
-    3. After getting the swagger content:
-       - Parse the actual endpoints, schemas, and security definitions
-       - Identify real vulnerabilities based on the actual API specification
-       - Provide specific findings with exact endpoint paths and parameter names
-    
-    SECURITY ANALYSIS FOCUS:
-    - Authentication mechanisms (look for securitySchemes)
-    - Authorization flaws (check security requirements on endpoints)
-    - Input validation issues (examine parameter schemas)
-    - Sensitive data exposure (review response schemas)
-    - Missing security headers
-    - Dangerous endpoints (like debug, admin, etc.)
-    
-    REMEMBER: NO ANALYSIS WITHOUT TOOL USAGE FIRST!
-    """,
+Your job is to:
+1. Use the get_swagger tool to fetch the Swagger specification from the provided URL
+2. Parse the JSON response to extract ALL endpoints and methods
+3. Use the add_endpoint tool to store each endpoint in the shared state
+
+WORKFLOW:
+1. First, call get_swagger with the provided URL
+2. Parse the "paths" section of the swagger JSON
+3. For each path and method combination, call add_endpoint with format "METHOD /path"
+4. Use get_state_summary to verify all endpoints were stored
+
+ENDPOINT EXTRACTION:
+If swagger has:
+```json
+{
+  "paths": {
+    "/api/users": {
+      "get": {...},
+      "post": {...}
+    },
+    "/api/articles": {
+      "get": {...}
+    }
+  }
+}
+```
+
+You must call add_endpoint for:
+- "GET /api/users"  
+- "POST /api/users"
+- "GET /api/articles"
+
+IMPORTANT: Use the add_endpoint tool for EACH endpoint you discover. Do not try to store multiple endpoints in one call.
+
+After processing all endpoints, call get_state_summary to show the total count of discovered endpoints.
+""",
     checkpointer=shared_checkpointer
 )
 
