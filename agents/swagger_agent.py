@@ -1,7 +1,7 @@
 from utils.model import model
 from tools import get_swagger
 from langgraph.prebuilt import create_react_agent
-from langgraph.checkpoint.memory import InMemorySaver
+from utils.checkpointer import shared_checkpointer
 
 
 swagger_agent = create_react_agent(
@@ -9,7 +9,7 @@ swagger_agent = create_react_agent(
     tools=[get_swagger],
     name="swagger_agent",
     prompt="You are a swagger expert. Always use one tool at a time.",
-    checkpointer=InMemorySaver()
+    checkpointer=shared_checkpointer
 )
 
 
