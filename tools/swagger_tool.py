@@ -2,6 +2,13 @@ import requests
 
 
 def get_swagger(url: str):
+    """
+    Function to get the swagger from the given url
+    Args:
+        url: str
+    Returns:
+        str: The swagger content
+    """
     return requests.get(url).content
 
 
