@@ -1,15 +1,28 @@
 {
   "vulnerabilities": [
     {
-      "id": "VULN-001",
-      "name": "Mass Assignment Vulnerability",
+      "id": "business_logic_account_takeover_same_email",
+      "title": "Account Takeover Through Case-Insensitive Email",
       "severity": "HIGH",
-      "description": "The application allows users to set the 'admin' flag to true via mass assignment in the user update endpoint.",
-      "evidence": "When sending a PUT request to /api/user with {\"user\": {\"admin\": true}}, the server accepted the change and set the user as admin. The response included a flag: flag{M4sS_AsS1gnm3nt}",
-      "affected_endpoints": [
-        "/api/user"
-      ],
-      "recommendation": "Implement a whitelist of allowed properties that can be updated by regular users, and ensure sensitive properties like 'admin' can only be modified by authorized administrators."
+      "description": "The application allows registration with the same email address but different case (e.g., User1@example.com vs user1@example.com). This could lead to account takeover or identity confusion.",
+      "evidence": "Successfully registered with 'User1@example.com' when 'user1@example.com' already exists",
+      "remediation": "Normalize email addresses before checking for duplicates. Convert all emails to lowercase during registration and comparison."
+    },
+    {
+      "id": "privilege_escalation_admin_flag",
+      "title": "Privilege Escalation Through Admin Flag Manipulation",
+      "severity": "CRITICAL",
+      "description": "Regular users can elevate their privileges to admin by simply setting the admin flag to true in a PUT request to /api/user. This allows complete privilege escalation and unauthorized access to admin functionality.",
+      "evidence": "Response shows admin=true after sending a request with admin=true. Bio field contains flag{M4sS_AsS1gnm3nt}",
+      "remediation": "Implement proper authorization checks before allowing changes to sensitive fields like 'admin'. These fields should only be modifiable by existing administrators or through a separate, secured administrative interface."
+    },
+    {
+      "id": "idor_article_cross_user_delete",
+      "title": "IDOR: Cross-User Article Deletion",
+      "severity": "CRITICAL",
+      "description": "The application allows a user to delete articles belonging to other users. This is a classic Insecure Direct Object Reference (IDOR) vulnerability where the authorization check for the DELETE operation fails to verify resource ownership.",
+      "evidence": "User1 successfully deleted User2's article. Response included flag{B0lA!!!!!}",
+      "remediation": "Implement proper authorization checks for all resource operations, especially destructive ones like DELETE. Verify that the authenticated user is the owner of the resource before allowing the operation."
     }
   ]
 }

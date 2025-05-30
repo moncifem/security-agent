@@ -5,217 +5,217 @@
       "status_code": 0,
       "response_body": "",
       "success": false,
-      "details": null
+      "details": "The admin flag was included in the registration request but not accepted. The response shows admin=false in the returned user object, indicating proper validation."
     },
     {
       "scenario_id": "",
       "status_code": 0,
       "response_body": "",
       "success": false,
-      "details": null
-    },
-    {
-      "scenario_id": "",
-      "status_code": 0,
-      "response_body": "",
-      "success": true,
-      "details": null
+      "details": "Attempted to set role and admin flag through mass assignment, but the server properly filtered these attributes. Response shows admin=false."
     },
     {
       "scenario_id": "",
       "status_code": 0,
       "response_body": "",
       "success": false,
-      "details": null
-    },
-    {
-      "scenario_id": "",
-      "status_code": 0,
-      "response_body": "",
-      "success": true,
-      "details": null
+      "details": "Successfully registered with 'User1@example.com' when 'user1@example.com' already exists. This indicates the application doesn't normalize email addresses, allowing potential account takeover."
     },
     {
       "scenario_id": "",
       "status_code": 0,
       "response_body": "",
       "success": false,
-      "details": null
+      "details": "Attempted SQL injection in the email field was properly rejected with a validation error. The application correctly validates email format before processing."
     },
     {
       "scenario_id": "",
       "status_code": 0,
       "response_body": "",
       "success": false,
-      "details": null
+      "details": "Attempted to login with a null password value. The application correctly rejected the request with a validation error."
     },
     {
       "scenario_id": "",
       "status_code": 0,
       "response_body": "",
       "success": false,
-      "details": null
+      "details": "Attempted NoSQL injection with a JSON object in the password field. The application correctly validated the password type and rejected the request."
     },
     {
       "scenario_id": "",
       "status_code": 0,
       "response_body": "",
       "success": false,
-      "details": null
+      "details": "Attempted to access another user's profile using a valid token. The API correctly returned the profile of the authenticated user (user2) rather than another user's data."
     },
     {
       "scenario_id": "",
       "status_code": 0,
       "response_body": "",
       "success": false,
-      "details": null
+      "details": "Successfully elevated privileges by setting admin=true. The API allowed a regular user to become an admin through a simple PUT request. Also discovered CTF flag in the response: flag{M4sS_AsS1gnm3nt}"
     },
     {
       "scenario_id": "",
       "status_code": 0,
       "response_body": "",
       "success": false,
-      "details": null
+      "details": "Attempted to set a role of 'administrator' through the user update endpoint. The application ignored this field, and the user remained a regular user (admin=false)."
     },
     {
       "scenario_id": "",
       "status_code": 0,
       "response_body": "",
       "success": false,
-      "details": null
+      "details": "Attempted to access the user profile endpoint without authentication. The application correctly rejected the request with a 403 error."
     },
     {
       "scenario_id": "",
       "status_code": 0,
       "response_body": "",
       "success": false,
-      "details": null
+      "details": "Attempted to make a payment with a negative amount to credit the account. The application rejected the payment with 'Card declined' message, showing proper validation."
     },
     {
       "scenario_id": "",
       "status_code": 0,
       "response_body": "",
       "success": false,
-      "details": null
+      "details": "Attempted to test for race conditions in payment processing. The application consistently rejected the payment with a 'Card declined' message. Without being able to make concurrent requests, a proper race condition test couldn't be performed."
     },
     {
       "scenario_id": "",
       "status_code": 0,
       "response_body": "",
       "success": false,
-      "details": null
+      "details": "Attempted to use another user's payment method by specifying user_id and payment_method_id. The application rejected the request because it requires direct card details (number, cvc, expiry, name) rather than references to stored payment methods."
     },
     {
       "scenario_id": "",
       "status_code": 0,
       "response_body": "",
       "success": false,
-      "details": null
+      "details": "Attempted to access the membership endpoint without authentication. The application correctly rejected the request with a 403 error."
     },
     {
       "scenario_id": "",
       "status_code": 0,
       "response_body": "",
       "success": false,
-      "details": null
+      "details": "User1 was able to access User2's profile data. While this is expected for basic profile information in a social network, the API should not expose sensitive data like payment card details (cardName, cardNumber, etc.) in profile responses."
     },
     {
       "scenario_id": "",
       "status_code": 0,
       "response_body": "",
       "success": false,
-      "details": null
+      "details": "A regular user was able to access the admin's profile data. This is expected for basic profile information, and no sensitive data was exposed in the response."
     },
     {
       "scenario_id": "",
       "status_code": 0,
       "response_body": "",
       "success": false,
-      "details": null
-    },
-    {
-      "scenario_id": "",
-      "status_code": 0,
-      "response_body": "",
-      "success": true,
-      "details": null
+      "details": "Attempted to access a user profile without authentication. The application correctly rejected the request with a 403 error."
     },
     {
       "scenario_id": "",
       "status_code": 0,
       "response_body": "",
       "success": false,
-      "details": null
+      "details": "Regular user was able to follow the admin user. This is expected functionality for a social network, not a vulnerability."
     },
     {
       "scenario_id": "",
       "status_code": 0,
       "response_body": "",
       "success": false,
-      "details": null
+      "details": "Attempted to follow a user without authentication. The application correctly rejected the request with a 403 error."
     },
     {
       "scenario_id": "",
       "status_code": 0,
       "response_body": "",
       "success": false,
-      "details": null
+      "details": "Attempted to unfollow a user that the current user isn't following. The application correctly rejected the request with a 400 error."
     },
     {
       "scenario_id": "",
       "status_code": 0,
       "response_body": "",
       "success": false,
-      "details": null
+      "details": "Attempted to access the articles feed without authentication. The application correctly rejected the request with a 403 error."
     },
     {
       "scenario_id": "",
       "status_code": 0,
       "response_body": "",
       "success": false,
-      "details": null
+      "details": "Attempted to manipulate the limit and offset parameters to access more articles than allowed. The application correctly validated the offset parameter, rejecting negative values."
     },
     {
       "scenario_id": "",
       "status_code": 0,
       "response_body": "",
       "success": false,
-      "details": null
+      "details": "User1 was able to favorite User2's article. This is expected functionality for a social network where articles are public, not a vulnerability."
     },
     {
       "scenario_id": "",
       "status_code": 0,
       "response_body": "",
       "success": false,
-      "details": null
+      "details": "Attempted to favorite an article without authentication. The application correctly rejected the request with a 403 error."
     },
     {
       "scenario_id": "",
       "status_code": 0,
       "response_body": "",
       "success": false,
-      "details": null
+      "details": "User1 was able to unfavorite User2's article that they previously favorited. This is expected functionality for a social network, not a vulnerability."
     },
     {
       "scenario_id": "",
       "status_code": 0,
       "response_body": "",
       "success": false,
-      "details": null
+      "details": "Attempted to access private articles by manipulating the query parameters. The application either ignored the 'private' parameter or there are no private admin articles to display."
     },
     {
       "scenario_id": "",
       "status_code": 0,
       "response_body": "",
       "success": false,
-      "details": null
+      "details": "Attempted to create an article with a manipulated author parameter. The application correctly ignored this parameter and set the author to the authenticated user (user2)."
     },
     {
       "scenario_id": "",
       "status_code": 0,
       "response_body": "",
-      "success": true,
-      "details": null
+      "success": false,
+      "details": "Attempted to create an article without authentication. The application correctly rejected the request with a 403 error."
+    },
+    {
+      "scenario_id": "",
+      "status_code": 0,
+      "response_body": "",
+      "success": false,
+      "details": "User1 was able to access User2's article details. This is expected functionality for a social network where articles are public, not a vulnerability."
+    },
+    {
+      "scenario_id": "",
+      "status_code": 0,
+      "response_body": "",
+      "success": false,
+      "details": "User1 attempted to modify User2's article. The application correctly rejected the request with a 403 error, enforcing proper authorization checks."
+    },
+    {
+      "scenario_id": "",
+      "status_code": 0,
+      "response_body": "",
+      "success": false,
+      "details": "User1 was able to delete User2's article. This is a critical IDOR vulnerability. The response included a CTF flag: flag{B0lA!!!!!}"
     }
   ]
 }
